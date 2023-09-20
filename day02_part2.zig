@@ -51,11 +51,9 @@ pub fn main() !void {
 
 fn readInput(alloc: Allocator) ![]u8 {
     const file = try std.fs.cwd().openFile("input/day2_real.txt", .{});
-    const size = try file.getEndPos();
-    const max_bytes: usize = @intCast(size);
     defer file.close();
     try file.seekTo(0);
-    const output = try file.readToEndAlloc(alloc, max_bytes);
+    const output = try file.readToEndAlloc(alloc, std.math.maxInt(usize));
 
     return output;
 }
