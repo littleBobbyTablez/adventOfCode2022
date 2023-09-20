@@ -1,10 +1,11 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 pub fn main() !void {
-    const output = readInput() catch "pech";
+    const allocator = std.heap.page_allocator;
+    const output = readInput(allocator) catch "pech";
 
     var elves = std.mem.split(u8, output, "\n\n");
-    const allocator = std.heap.page_allocator;
     var cumulated = std.ArrayList(usize).init(allocator);
     while (elves.next()) |elv| {
         var trimmed = std.mem.trim(u8, elv, "\n");
@@ -45,14 +46,12 @@ pub fn main() !void {
     std.debug.print("Sum: {}\n", .{sum});
 }
 
-fn readInput() ![]u8 {
-    var output: [20000]u8 = undefined;
-
+fn readInput(alloc: Allocator) ![]u8 {
     const file = try std.fs.cwd().openFile("input/day1_real.txt", .{});
 
     defer file.close();
     try file.seekTo(0);
-    const n = try file.readAll(&output);
+    const output = try file.readToEndAlloc(alloc, 20000);
 
-    return output[0..n];
+    return output;
 }
