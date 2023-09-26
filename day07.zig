@@ -53,7 +53,6 @@ pub fn main() !void {
                     const before = dirs.get(current_dir) orelse 0;
                     const after = before + file_size;
                     try dirs.put(current_dir, after);
-                    std.debug.print("{s} = {d}\n", .{ current_dir, dirs.get(current_dir).? });
                 }
             },
         }
@@ -63,15 +62,30 @@ pub fn main() !void {
 
     var sum: usize = 0;
 
+    const root_size = dirs.get("/").?;
+    const free_space = 70_000_000 - root_size;
+    const needed = 30_000_000 - free_space;
+    var candidate = root_size;
+
     while (dirs_iter.next()) |entry| {
         var size = entry.value_ptr.*;
         if (size <= 100000) {
             sum += size;
         }
+
+        if (size > needed) {
+            if (size < candidate) {
+                candidate = size;
+            }
+        }
     }
 
     std.debug.print("count: {d}\n", .{dirs.count()});
-    std.debug.print("sum: {d}\n", .{sum});
+    std.debug.print("sum: {d}\n\n", .{sum});
+
+    std.debug.print("Required: {d}\n", .{free_space});
+    std.debug.print("Needed: {d}\n", .{needed});
+    std.debug.print("Result: {d}\n", .{candidate});
 }
 
 fn readInput(alloc: Allocator) ![]u8 {
