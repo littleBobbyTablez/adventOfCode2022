@@ -20,7 +20,7 @@ pub fn main() !void {
     var wood_cols = try rotate(&wood_rows);
     for (wood_rows, 0..) |tree_line, i| {
         for (tree_line, 0..) |_, j| {
-            if (try isVisibleHorizontally(tree_line, j) or try isVisibleHorizontally(wood_cols[j], i)) {
+            if (try isVisible(tree_line, j) or try isVisible(wood_cols[j], i)) {
                 counter += 1;
             }
 
@@ -43,7 +43,7 @@ fn readInput(alloc: Allocator) ![]u8 {
     return output;
 }
 
-fn isVisibleHorizontally(row: []const u8, index: usize) !bool {
+fn isVisible(row: []const u8, index: usize) !bool {
     const subject = row[index];
     const left = row[0..index];
     const right = row[index + 1 .. row.len];
@@ -57,11 +57,8 @@ fn isVisibleFromDirection(row: []const u8, subject: usize) !bool {
         if (height >= subject - 48) {
             return false;
         }
-        // std.debug.print("height: {d}, subject: {d}\n", .{ height, subject - 48 });
     }
     return true;
-    // std.debug.print("left: {s}\n", .{left});
-    // std.debug.print("right: {s}\n", .{right});
 }
 
 fn rotate(array: [][]const u8) ![][]const u8 {
@@ -129,7 +126,7 @@ fn calculateView(row: []const u8, col: []const u8, row_index: usize, col_index: 
 test "isVisibleHorizontally" {
     var input = "32144";
 
-    const result = try isVisibleHorizontally(input, 3);
+    const result = try isVisible(input, 3);
     try expect(result);
 }
 
@@ -153,7 +150,6 @@ test "rotate" {
     var output = try rotate(&input);
 
     for (output, 0..) |value, i| {
-        // std.debug.print("v: {s}, e: {s}\n", .{ value, expected[i] });
         try expect(std.mem.eql(u8, value, expected[i]));
     }
 }
@@ -169,49 +165,40 @@ test "calculate view score" {
 
 test "calculate view score one direction" {
     const row_1 = "33";
-
     const result = try calculateViewScoreOneDirection(row_1, 5);
     try expect(result == 2);
 
     const row_2 = "";
-
     const result_2 = try calculateViewScoreOneDirection(row_2, 5);
     try expect(result_2 == 1);
 
     const row_3 = "25";
-
     const result_3 = try calculateViewScoreOneDirection(row_3, 5);
     try expect(result_3 == 1);
 
     const row_4 = "52";
-
     const result_4 = try calculateViewScoreOneDirection(row_4, 5);
     try expect(result_4 == 2);
 
     const row_5 = "353";
-
     const result_5 = try calculateViewScoreOneDirection(row_5, 5);
     try expect(result_5 == 2);
 }
 
 test "calculate view score one direction reverse" {
     const row_1 = "33";
-
     const result = try calculateViewScoreOneDirectionReverse(row_1, 5);
     try expect(result == 2);
 
     const row_2 = "";
-
     const result_2 = try calculateViewScoreOneDirectionReverse(row_2, 5);
     try expect(result_2 == 1);
 
     const row_3 = "25";
-
     const result_3 = try calculateViewScoreOneDirectionReverse(row_3, 5);
     try expect(result_3 == 2);
 
     const row_4 = "52";
-
     const result_4 = try calculateViewScoreOneDirectionReverse(row_4, 5);
     try expect(result_4 == 1);
 }
