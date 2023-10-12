@@ -27,13 +27,10 @@ pub fn main() !void {
         rope = try move(rope, line, &visited);
     }
 
-    // std.debug.print("{d} {d} {d} {d}\n", .{ rope.head.x, rope.head.y, rope.tail.x, rope.tail.y });
-
     var iter = visited.keyIterator();
     var counter: usize = 0;
     while (iter.next()) |_| {
         counter += 1;
-        // std.debug.print("{s}\n", .{key});
     }
     std.debug.print("visited: {d}", .{counter});
 }
@@ -49,7 +46,6 @@ fn readInput(alloc: Allocator) ![]u8 {
 
 fn move(rope: [10]Point, cmd: []const u8, visited: *std.StringHashMap(void)) ![10]Point {
     const steps = try std.fmt.parseInt(usize, cmd[2..], 10);
-    // std.debug.print("steps: {d}\n", .{steps});
     const direction = cmd[0];
     var newRope: [10]Point = rope;
 
@@ -60,22 +56,13 @@ fn move(rope: [10]Point, cmd: []const u8, visited: *std.StringHashMap(void)) ![1
         newRope[0] = position.head;
         newRope[1] = position.tail;
 
-        // std.debug.print("{d}, {d}\n", .{ newRope[1].x, newRope[1].y });
-
         for (2..10) |i| {
             const result = followHead(newRope[i - 1], newRope[i]);
-            // if (i == 2) {
-            //     std.debug.print("{s}, ({d}, {d}) + ({d}, {d}) = ({d}, {d})\n", .{ cmd, newRope[i - 1].x, newRope[i - 1].y, newRope[i].x, newRope[i].y, result.x, result.y });
-            // }
             newRope[i] = result;
         }
 
         const mapitem = try std.fmt.allocPrint(allocator, "({d},{d})", .{ newRope[9].x, newRope[9].y });
         try visited.put(mapitem, {});
-        // const headitem = try std.fmt.allocPrint(allocator, "({d},{d})", .{ newRope[0].x, newRope[0].y });
-
-        // std.debug.print("cmd: {s}, head: :w
-        // {s}, tail: {s}\n", .{ cmd, headitem, mapitem });
     }
     return newRope;
 }
@@ -184,17 +171,6 @@ fn createPoint(x: isize, y: isize) Point {
 fn equals(r1: Rope, r2: Rope) bool {
     return r1.head.x == r2.head.x and r1.head.y == r2.head.y and r1.tail.x == r2.tail.x and r1.tail.y == r2.tail.y;
 }
-
-// test "move one step right" {
-//     const rope = initiateRope();
-//     const expected = initiateRope();
-//     var visited = std.StringHashMap(void).init(allocator);
-//     defer visited.deinit();
-//
-//     const result = try move(rope, "R 10", &visited);
-//
-//     try expect(equals(result, expected));
-// }
 
 test "is within one" {
     const head = Point{
