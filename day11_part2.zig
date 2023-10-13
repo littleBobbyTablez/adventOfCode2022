@@ -68,11 +68,11 @@ pub fn main() !void {
     try items[7].append(62);
     try items[7].append(92);
 
-    for (0..20) |_| {
+    for (0..10000) |_| {
         for (0..8) |i| {
             for (try items[i].toOwnedSlice()) |item| {
                 const old = operation(i, item);
-                const new = old / 3;
+                const new = old % (19 * 17 * 3 * 13 * 2 * 11 * 5 * 7);
                 const throwTo = runTest(i, new);
                 try items[throwTo].append(new);
                 monkeys[i] += 1;
